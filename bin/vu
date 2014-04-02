@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import h5py
+import argparse
+from matplotlib.pylab import *
+
+hutch = os.environ['EXPT'][:3]
+expt  = os.environ['EXPT']
+
+parser = argparse.ArgumentParser(description='Batch analyze some runs from the cxii0114 experiment!')
+
+parser.add_argument(
+    'run', type=int,
+    help='The run to view'
+)
+
+parser.add_argument(
+    'evt', type=int, 
+    help='The event to view'
+)
+
+args = parser.parse_args()
+
+hdf = h5py.File(os.path.join('/reg/d/psdm/%s/%s/scratch/hdf5' % (hutch, expt),
+                             'run%d.h5' % args.run), 'r')
+
+figure(figsize=(15,15))
+title(run)
+
+ax=subplot(221)
+ax.set_title('DS1')
+imshow(hdf['/evt%d_ds1_assembled_image' % args.evt], vmin=0, vmax=1000)
+
+ax=subplot(222)
+ax.set_title('DS1')
+plot(hdf['/evt%d_ds1_radial_profile' % evt][0], hdf['evt%d_ds1_radial_profile' % evt][1])
+xlabel(r'q ($\AA^{-1}$)')
+ylabel('Intensity (ADU)')
+
+ax=subplot(223)
+ax.set_title('DS2')
+imshow(hdf['/evt%d_ds2_assembled_image' % evt], vmin=0, vmax=100)
+
+ax=subplot(224)
+ax.set_title('DS2')
+plot(hdf['/evt%d_ds2_radial_profile' % evt][0], hdf['/evt%d_ds2_radial_profile' % evt][1])
+xlabel(r'q ($\AA^{-1}$)')
+ylabel('Intensity (ADU)')
+
+show()
+
+hdf.close()
